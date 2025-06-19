@@ -20,37 +20,40 @@ An OpenCV-based application that projects a 3D cube onto a detected chessboard p
 mkdir build && cd build
 cmake ..
 make
+```
 The executable will be created at build/ARChessCube
 
-Run the Application
-bash
-./build/ARChessCube
-Keyboard Controls
-W/A/S/D: Move cube along X/Y axes
 
-E/F: Move cube along Z axis
 
-I/J/K/L: Rotate cube around X/Z axes
+## Keyboard Controls
+- W/A/S/D: Move cube along X/Y axes
 
-U/O: Rotate cube around Y axis
+- E/F: Move cube along Z axis
 
-ESC: Exit application
+- I/J/K/L: Rotate cube around X/Z axes
 
-Docker Setup
+- U/O: Rotate cube around Y axis
+
+- ESC: Exit application
+
+## Docker Setup
 1. Allow X11 access (run once per session)
-bash
+```bash
 xhost +local:root
+```
 2. Build the Docker image
-bash
+```bash
 docker build -t archesscube .
+```
 3. Run the container
-bash
+```bash
 docker run --rm \
     --privileged \
     -e DISPLAY=$DISPLAY \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     --device=/dev/video0 \
     archesscube
+```
 Troubleshooting
 Camera Issues:
 bash
@@ -64,11 +67,12 @@ echo $DISPLAY  # Should return :0 or similar
 # Add Xauthority if needed
 docker run ... -v "$HOME/.Xauthority:/root/.Xauthority:rw" ...
 Build Issues:
-bash
+
+
 # If CMake can't find OpenCV
 sudo apt-get install libopencv-dev
-File Structure
-text
+## File Structure
+```text
 ARChessCube/
 ├── CMakeLists.txt
 ├── Dockerfile
@@ -78,3 +82,4 @@ ARChessCube/
 │   ├── main.cpp
 │   └── util.cpp
 └── README.md
+```
