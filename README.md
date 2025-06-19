@@ -54,23 +54,7 @@ docker run --rm \
     --device=/dev/video0 \
     archesscube
 ```
-Troubleshooting
-Camera Issues:
-bash
-# Try different video devices if /dev/video0 doesn't work
-ls /dev/video*
-X11 Display Issues:
-bash
-# Verify DISPLAY variable
-echo $DISPLAY  # Should return :0 or similar
 
-# Add Xauthority if needed
-docker run ... -v "$HOME/.Xauthority:/root/.Xauthority:rw" ...
-Build Issues:
-
-
-# If CMake can't find OpenCV
-sudo apt-get install libopencv-dev
 ## File Structure
 ```text
 ARChessCube/
