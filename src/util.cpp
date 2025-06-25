@@ -42,14 +42,14 @@ int_fast8_t selectAvailableCamera()
 
     std::cout << "\nEnter the camera index to use: ";
 
-    int selectedCamera;
-    std::cin >> selectedCamera;
+  //  int selectedCamera;
+   // std::cin >> selectedCamera;
 
-    if (std::find(availableCameras.begin(), availableCameras.end(), selectedCamera) == availableCameras.end())
-    {
-        std::cerr << "Error: Selected camera is not available!" << std::endl;
-        return -1;
-    }
+  //  if (std::find(availableCameras.begin(), availableCameras.end(), selectedCamera) == availableCameras.end())
+   // {
+    //    std::cerr << "Error: Selected camera is not available!" << std::endl;
+     //   return -1;
+   // }
 
-    return selectedCamera;
+    return 0;
 }
