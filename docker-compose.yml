@@ -1,0 +1,22 @@
+version: '3.0'
+services:
+  archesscube:
+    container_name: archesscube
+    image: archesscube:v1
+    command: [
+      "/ARChessCube/build/ARChessCube",
+      "2",
+      "/ARChessCube/configs/camera1.json", 
+      "/ARChessCube/configs/camera2.json" 
+    ]
+    volumes:
+      - './configs:/ARChessCube/configs' 
+      - '/tmp/:/tmp/'
+      - '/dev/:/dev/'
+      - '/tmp/.X11-unix:/tmp/.X11-unix'
+    environment:
+      - DISPLAY=$DISPLAY
+    ipc: host
+    network_mode: host
+    user: aruser
+    privileged: true

@@ -8,11 +8,11 @@ RUN apt-get update && \
     cmake \
     libopencv-dev \
     g++ \
-#    v4l-utils \
-#    libv4l-dev \
-#    libgtk2.0-dev \
-#    libcanberra-gtk-module \
+    wget \
     && rm -rf /var/lib/apt/lists/*
+
+# Установка nlohmann/json
+RUN wget https://github.com/nlohmann/json/releases/download/v3.11.2/json.hpp -O /usr/include/json.hpp
 
 RUN useradd -m aruser && \
     mkdir -p /ARChessCube && \
@@ -27,5 +27,3 @@ RUN mkdir -p build && \
     cd build && \
     cmake .. && \
     make
-
-CMD ["/ARChessCube/build/ARChessCube"]

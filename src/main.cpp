@@ -8,6 +8,16 @@
 #include <sstream>
 #include <iomanip>
 
+//#include <nlohmann/json.hpp> 
+#include <json.hpp> 
+
+
+
+
+
+
+
+
 void printMat(const std::string& name, const cv::Mat& mat) {
     std::cout << name << ":\n";
     std::cout << std::fixed << std::setprecision(3);
@@ -41,6 +51,32 @@ void drawCoordinateSystem(cv::Mat& frame,
     cv::arrowedLine(frame, projectedPoints[0], projectedPoints[2], cv::Scalar(0, 255, 0), 2);
     // Z-axis (blue)
     cv::arrowedLine(frame, projectedPoints[0], projectedPoints[3], cv::Scalar(255, 0, 0), 2);
+}
+
+bool loadCameraParameters(const std::string& filename, 
+                        cv::Mat& cameraMatrix, 
+                        cv::Mat& distCoeffs) {
+    try {
+        std::ifstream file(filename);
+        if (!file.is_open()) {
+            std::cerr << "Error: Could not open file " << filename << std::endl;
+            return false;
+        }
+        
+        nlohmann::json_abi_v3_11_2::json config;
+        file >> config;
+        
+        std::vector<double> cam_data = config["camera_matrix"]["data"];
+        cameraMatrix = cv::Mat(3, 3, CV_64F, cam_data.data()).clone();
+        
+        std::vector<double> dist_data = config["distortion_coefficients"]["data"];
+        distCoeffs = cv::Mat(5, 1, CV_64F, dist_data.data()).clone();
+        
+        return true;
+    } catch (const std::exception& e) {
+        std::cerr << "Error loading camera config: " << e.what() << std::endl;
+        return false;
+    }
 }
 
 void processChessboard(cv::Mat& frame, 
@@ -148,7 +184,20 @@ Model3D loadOBJ(const std::string& path) {
     return model;
 }
 
-int main() {
+int main(int argc, char** argv) {
+
+    if (argc < 3) {
+        std::cerr << "Usage: " << argv[0] << " <num_cameras> <config_path1> [<config_path2> ...]" << std::endl;
+        return 1;
+    }
+
+    int num_cameras = std::stoi(argv[1]);
+    std::vector<std::string> config_paths;
+    
+    for (int i = 0; i < num_cameras; ++i) {
+        config_paths.push_back(argv[2 + i]);
+    }
+
     selectAvailableCamera();
     
     int cameraIndex1 = 2;  
@@ -180,16 +229,13 @@ int main() {
 
     std::vector<cv::Point3f> scaledVertices = objModel.vertices;
     
-    const cv::Mat cameraMat1 = (cv::Mat_<double>(3, 3) <<
-        806.7142265403371, 0, 317.2354485853214,
-        0, 941.3350377116267, 236.6091014506515,
-        0, 0, 1);
-        
-    const cv::Mat distortion1 = (cv::Mat_<double>(5, 1) << -0.05256710861654016, 1.431356531301361,
-               -0.0002245010772262836, 0.003289240793738838, -8.353763001129924);
+cv::Mat cameraMat1, distortion1, cameraMat2, distortion2;
 
-    const cv::Mat cameraMat2 = cameraMat1.clone(); 
-    const cv::Mat distortion2 = distortion1.clone();
+
+if (!loadCameraParameters(config_paths[0], cameraMat1, distortion1) ||
+    !loadCameraParameters(config_paths[1], cameraMat2, distortion2))
+    std::cerr << "Failed to load camera parameters." << std::endl;
+
 
     const cv::Mat R = cv::Mat::eye(3, 3, CV_64F); 
     const cv::Mat T = (cv::Mat_<double>(3, 1) << -0.1, 0.0, 0.0);
